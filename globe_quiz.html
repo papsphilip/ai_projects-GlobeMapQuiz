@@ -1391,6 +1391,24 @@
         window.addEventListener('mousemove', (e) => handleInteraction(e, false));
         window.addEventListener('click', (e) => handleInteraction(e, true));
 
+        document.getElementById('type-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('answer-input');
+            const answer = input.value.trim();
+            if (!answer) return;
+
+            const target = STATE.countries.find(c => c.id === STATE.targetIndex);
+            if (target && answer.toLowerCase() === target.name.toLowerCase()) {
+                success(STATE.targetIndex);
+                input.value = '';
+                document.getElementById('feedback').textContent = "CONFIRMED";
+                setTimeout(nextRound, 1500);
+            } else {
+                failEffect();
+                input.value = '';
+            }
+        });
+
         document.getElementById('skip-btn').onclick = () => {
             if(STATE.mode === 0) return;
             document.getElementById('feedback').textContent = "SKIPPED";
