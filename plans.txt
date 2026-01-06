@@ -1,71 +1,478 @@
-# GLOBE MAP QUIZ: PROFESSIONAL UPGRADE MASTER PLAN
+# GLOBE MAP QUIZ: MASTER PLAN v2.1
+# ========================================
+# Last Updated: 2026-01-06
+# Status: ACTIVE - PHASE 0 IN PROGRESS
+#
+# This plan uses checkbox format: [ ] = pending, [x] = complete, [~] = in progress
+# Progress is tracked in: progress.txt
 
-Target: Transform the prototype into a shippable, robust, and visually stunning web game.
+================================================================================
+EXECUTIVE SUMMARY
+================================================================================
 
-## PHASE 1: ARCHITECTURAL FOUNDATION & TOOLING
-Status: HIGH PRIORITY
-Goal: Transition from a monolithic prototype to a modular, scalable development environment while retaining single-file portability.
+REVISED APPROACH: Hybrid Three.js + geo-three implementation
+- Keep Three.js for globe geometry and game interactions (proven, working)
+- Add geo-three library for high-resolution tile streaming with LOD
+- Maintains CDN-based single HTML file deployment
+- Zero-lag interaction via existing Three.js OrbitControls
 
-1.1 BUILD SYSTEM INTEGRATION
-- Implement Vite-based development environment.
-- Integrate `vite-plugin-singlefile` to bundle all assets (JS, CSS, Base64 imagery) into a single distribute-ready HTML.
-- Setup PostCSS for Tailwind CSS processing.
+Key Discovery: geo-three is a purpose-built tile streaming library for Three.js
+with support for OpenStreetMap, MapTiler, Bing, and other providers.
 
-1.2 MODULAR REFACTORING (ESM)
-- Extract Logic into specialized modules:
-  - `src/core/State.js`: Centralized reactive state using Object.defineProperty or Proxy.
-  - `src/core/Scene.js`: Three.js lifecycle (init, animate, disposal).
-  - `src/game/Engine.js`: Mission logic, scoring, and MCQ generation.
-  - `src/utils/Geometry.js`: GeoJSON processing and coordinate transformations.
+TARGET: Transform the prototype into a shippable, robust, and visually stunning web game.
 
----
+================================================================================
+PHASE 0: RESEARCH & FEASIBILITY
+================================================================================
+Status: [~] IN PROGRESS (88%)
+Priority: CRITICAL
 
-## PHASE 2: UI/UX ROBUSTNESS & DESIGN SYSTEM
-Status: CRITICAL FOR SHIPPING
-Goal: Ensure the interface is indestructible, responsive, and professional.
+RESEARCH COMPLETED:
+[x] 0.1 - Evaluate Cesium.js core capabilities
+    [x] 0.1.1 - Cesium optimized for geospatial, native GeoJSON support
+    [x] 0.1.2 - GeoJsonDataSource with styling (stroke, fill, strokeWidth)
+    [x] 0.1.3 - Streaming imagery up to 0.3m resolution
+    [x] 0.1.4 - Bundle size ~23MB (large, requires assets folder)
+    [x] 0.1.5 - ScreenSpaceEventHandler for click/pick selection
 
-2.1 ROBUST UI FRAMEWORK
-- Migrate all styles to a unified Tailwind-based design system.
-- Implement "Skeleton States": UI placeholders that prevent layout shifts while 8K textures load.
-- Global Error Boundaries: A "Safe Mode" that catches WebGL context loss or asset failures, offering graceful recovery.
+[x] 0.2 - Cesium.js licensing & dependencies
+    [x] 0.2.1 - Apache 2.0 license confirmed (free commercial use)
+    [x] 0.2.2 - Cesium Ion optional, free tier available
+    [x] 0.2.3 - Free providers: OpenStreetMap, Natural Earth II, CartoDB
+    [x] 0.2.4 - Bundle: ~23MB, requires workers/shaders assets
+    [x] 0.2.5 - Single-file: DIFFICULT (requires external assets)
 
-2.2 USER EXPERIENCE ENHANCEMENTS
-- Mission Configuration: A polished "Command Center" modal for custom quiz building (Given vs Find).
-- State Persistence: Save mission progress, user settings, and high scores to `localStorage` with JSON validation.
-- Input Robustness: Fuzzy matching for text inputs that accounts for typos (Levenshtein distance), accents, and common abbreviations (e.g., "USA" vs "United States").
+DECISION: User selected HYBRID APPROACH
+- Pure Cesium migration rejected due to bundle size/complexity
+- Hybrid: Keep Three.js + add tile streaming via geo-three
 
----
+[x] 0.3 - geo-three library evaluation
+    [x] 0.3.1 - Confirmed: tile-based geographic visualization for Three.js
+    [x] 0.3.2 - Providers: OpenStreetMap, MapTiler, Bing, Google, HERE
+    [x] 0.3.3 - LOD modes: Raycast, Radial, Frustum (configurable)
+    [x] 0.3.4 - Spherical globe mode supported
+    [x] 0.3.5 - MIT license (commercial-friendly)
+    [x] 0.3.6 - CDN available: jsdelivr ~50-60KB, v0.1.15, requires Three.js >0.120.0
+    [x] 0.3.7 - Zoom level 20 supported (sufficient for country detail)
 
-## PHASE 3: RENDERING & PERFORMANCE OPTIMIZATION
-Status: TECHNICAL EXCELLENCE
-Goal: 60FPS performance on mid-range hardware with high-fidelity visuals.
+[ ] 0.4 - Create hybrid proof-of-concept
+    [ ] 0.4.1 - Integrate geo-three with current Three.js globe
+    [ ] 0.4.2 - Configure OpenStreetMap tile provider
+    [ ] 0.4.3 - Test LOD transitions at various zoom levels
+    [ ] 0.4.4 - Verify country overlay still works with tiled base
+    [ ] 0.4.5 - Benchmark performance vs current implementation
 
-3.1 ADVANCED SHADER PIPELINE
-- Refactor Highlight Shader: Optimize branching and replace complex calculations with pre-computed lookup tables.
-- Post-Processing: Integration of a lightweight EffectComposer for Bloom (glow) and FXAA (anti-aliasing) without killing performance.
+DECISION GATE:
+[ ] 0.5 - GO/NO-GO decision on geo-three integration
+    Criteria:
+    - Performance >= current implementation
+    - Tiles load without visible seams
+    - Country highlights visible over tile imagery
+    - CDN-based deployment works
+    - No API key required for basic functionality
 
-3.2 SMART ASSET PIPELINE
-- Texture Fallback System: If 8K "Blue Marble" imagery fails to load or causes OOM, automatically fall back to 2K textures or a procedural vector globe.
-- Flag Atlas Padding: Add precise 2px-4px gutters to the flag canvas to eliminate "texture bleeding" at country borders.
+================================================================================
+PHASE 1: TILE STREAMING INTEGRATION
+================================================================================
+Status: [ ] BLOCKED (waiting on Phase 0.5)
+Priority: HIGH
 
----
+GEO-THREE SETUP:
+[ ] 1.1 - Initialize geo-three map view
+    [ ] 1.1.1 - Add geo-three CDN script to HTML
+    [ ] 1.1.2 - Create MapView with spherical mode
+    [ ] 1.1.3 - Configure OpenStreetMap provider (no API key)
+    [ ] 1.1.4 - Sync with existing Three.js scene
+    [ ] 1.1.5 - Match globe scale and position
 
-## PHASE 4: POLISH & SHIPPING READINESS
-Status: FINAL PASS
-Goal: Remove the "indie" feel and replace it with a premium product experience.
+[ ] 1.2 - LOD configuration
+    [ ] 1.2.1 - Select optimal LOD mode (Raycast recommended)
+    [ ] 1.2.2 - Configure thresholdUp/thresholdDown values
+    [ ] 1.2.3 - Set maximum zoom level (17-19 for street detail)
+    [ ] 1.2.4 - Test tile loading at country zoom
+    [ ] 1.2.5 - Optimize for 60fps during zoom
 
-4.1 SOUND & FEEDBACK
-- Replace simple oscillators with high-quality, quantized UI sound effects (Web Audio API with buffer pre-loading).
-- Impact Effects: Screen shake, haptic feedback (for mobile), and "Success Particles" on correct answers.
+[ ] 1.3 - Visual integration
+    [ ] 1.3.1 - Ensure country GeoJSON renders above tiles
+    [ ] 1.3.2 - Adjust country polygon opacity for tile visibility
+    [ ] 1.3.3 - Test highlight shader compatibility
+    [ ] 1.3.4 - Verify flag overlays position correctly
+    [ ] 1.3.5 - Test atmosphere/glow effects with tiles
 
-4.2 ACCESSIBILITY & SEO
-- Full Keyboard Navigation: Every button and globe interaction accessible via `Tab` and `Arrows`.
-- ARIA Labels: Screen reader support for country names and mission status.
-- Metadata: OpenGraph/Twitter card integration for professional social sharing.
+[ ] 1.4 - Fallback system
+    [ ] 1.4.1 - Detect tile provider failures
+    [ ] 1.4.2 - Fall back to current 8K texture if tiles fail
+    [ ] 1.4.3 - Show loading indicator during tile fetch
+    [ ] 1.4.4 - Cache tiles for faster reload
+    [ ] 1.4.5 - Graceful degradation messaging
 
-4.3 OFFLINE & PORTABILITY
-- Service Worker Implementation: Enable PWA capabilities so the game works perfectly offline after the first visit.
-- Asset Embedding: Aggressive compression of auxiliary assets (SVG icons, sounds) to keep the final single-file size under 5MB.
+================================================================================
+PHASE 2: QUIZ SYSTEM VERIFICATION
+================================================================================
+Status: [ ] NOT STARTED
+Priority: HIGH
 
----
+EXISTING FUNCTIONALITY CHECK:
+[ ] 2.1 - Verify all quiz modes work with new tiles
+    [ ] 2.1.1 - Mode 1: Locate (find country on globe)
+    [ ] 2.1.2 - Mode 2: Identify (name highlighted country)
+    [ ] 2.1.3 - Mode 3: Flag Match (match flag to country)
+    [ ] 2.1.4 - Mode 4: Reverse Locate (find by flag)
+    [ ] 2.1.5 - Mode 5: Master (type country name)
+    [ ] 2.1.6 - Mode 6: Marathon (find all countries)
 
+[ ] 2.2 - Visual feedback verification
+    [ ] 2.2.1 - Correct answer highlight visible over tiles
+    [ ] 2.2.2 - Wrong answer flash works
+    [ ] 2.2.3 - Target country glow visible
+    [ ] 2.2.4 - Found countries markers visible
+    [ ] 2.2.5 - Country selection raycasting accurate
+
+[ ] 2.3 - Interaction verification
+    [ ] 2.3.1 - Click detection still accurate
+    [ ] 2.3.2 - Hover effects work
+    [ ] 2.3.3 - Fly-to animation smooth
+    [ ] 2.3.4 - Small countries still selectable
+    [ ] 2.3.5 - Touch interactions on mobile
+
+================================================================================
+PHASE 3: UI/UX ENHANCEMENTS
+================================================================================
+Status: [ ] NOT STARTED
+Priority: HIGH
+
+LOADING STATES:
+[ ] 3.1 - Tile loading indicators
+    [ ] 3.1.1 - Show progress during initial tile load
+    [ ] 3.1.2 - Subtle indicator for background tile fetching
+    [ ] 3.1.3 - Skeleton for tiles not yet loaded
+    [ ] 3.1.4 - Loading spinner integration with splash
+    [ ] 3.1.5 - Tile cache status in settings
+
+[ ] 3.2 - Zoom level feedback
+    [ ] 3.2.1 - Show current zoom level indicator
+    [ ] 3.2.2 - Visual hint when max zoom reached
+    [ ] 3.2.3 - Mini-map showing current view area
+    [ ] 3.2.4 - Smooth zoom level transitions
+    [ ] 3.2.5 - Zoom-to-fit for selected country
+
+[ ] 3.3 - Existing UI verification
+    [ ] 3.3.1 - Country index panel works
+    [ ] 3.3.2 - Settings panel works
+    [ ] 3.3.3 - All 6 themes work with tiles
+    [ ] 3.3.4 - HUD elements visible
+    [ ] 3.3.5 - Crosshair overlay works
+
+ROBUST UI FRAMEWORK (from original plan):
+[ ] 3.4 - Design system
+    [ ] 3.4.1 - Unified styling approach
+    [ ] 3.4.2 - "Skeleton States": UI placeholders during texture load
+    [ ] 3.4.3 - Global Error Boundaries with graceful recovery
+
+================================================================================
+PHASE 4: AUDIO & FEEDBACK
+================================================================================
+Status: [ ] NOT STARTED
+Priority: MEDIUM
+
+SOUND SYSTEM:
+[ ] 4.1 - Enhanced audio
+    [ ] 4.1.1 - Generate multi-harmonic tones
+    [ ] 4.1.2 - Correct answer chime
+    [ ] 4.1.3 - Wrong answer buzz
+    [ ] 4.1.4 - UI click/select sounds
+    [ ] 4.1.5 - Countdown warning beeps
+    [ ] 4.1.6 - Completion fanfare
+    [ ] 4.1.7 - Volume control + mute toggle
+
+HAPTIC & VISUAL:
+[ ] 4.2 - Feedback effects
+    [ ] 4.2.1 - Screen shake on wrong answer
+    [ ] 4.2.2 - Flash overlay for feedback
+    [ ] 4.2.3 - Mobile haptic vibration
+    [ ] 4.2.4 - Score increment animation
+    [ ] 4.2.5 - Success particles on correct answers
+
+================================================================================
+PHASE 5: ACCESSIBILITY
+================================================================================
+Status: [ ] NOT STARTED
+Priority: MEDIUM
+
+[ ] 5.1 - Keyboard navigation
+    [ ] 5.1.1 - Tab through all elements
+    [ ] 5.1.2 - Arrow keys for navigation
+    [ ] 5.1.3 - Enter to confirm
+    [ ] 5.1.4 - Escape to close/pause
+    [ ] 5.1.5 - Visible focus indicators
+
+[ ] 5.2 - Screen reader support
+    [ ] 5.2.1 - aria-live for updates
+    [ ] 5.2.2 - aria-label on buttons
+    [ ] 5.2.3 - Announce country selection
+
+[ ] 5.3 - Reduced motion
+    [ ] 5.3.1 - Detect prefers-reduced-motion
+    [ ] 5.3.2 - Disable auto-rotate
+    [ ] 5.3.3 - Reduce animations
+
+================================================================================
+PHASE 6: STABILITY & ERROR HANDLING
+================================================================================
+Status: [ ] NOT STARTED
+Priority: HIGH
+
+[ ] 6.1 - Error recovery
+    [ ] 6.1.1 - WebGL context loss handling
+    [ ] 6.1.2 - Tile provider failure handling
+    [ ] 6.1.3 - GeoJSON parse error handling
+    [ ] 6.1.4 - Global exception handler
+
+[ ] 6.2 - Graceful degradation
+    [ ] 6.2.1 - Fallback to static texture
+    [ ] 6.2.2 - "Safe Mode" option
+    [ ] 6.2.3 - Clear error messages
+    [ ] 6.2.4 - Offline detection
+
+[ ] 6.3 - Data persistence
+    [ ] 6.3.1 - Validate localStorage
+    [ ] 6.3.2 - Handle corrupted data
+    [ ] 6.3.3 - Auto-save progress
+
+================================================================================
+PHASE 7: PERFORMANCE VALIDATION
+================================================================================
+Status: [ ] NOT STARTED
+Priority: HIGH
+
+[ ] 7.1 - Benchmarking
+    [ ] 7.1.1 - Initial load time < 3s
+    [ ] 7.1.2 - Time to interactive < 5s
+    [ ] 7.1.3 - Maintain 60fps during gameplay
+    [ ] 7.1.4 - Memory < 500MB
+    [ ] 7.1.5 - Tile request efficiency
+
+[ ] 7.2 - Device testing
+    [ ] 7.2.1 - Low-end laptop
+    [ ] 7.2.2 - Mid-range desktop
+    [ ] 7.2.3 - iPhone Safari
+    [ ] 7.2.4 - Android Chrome
+    [ ] 7.2.5 - Tablet
+
+[ ] 7.3 - Zero lag validation
+    [ ] 7.3.1 - Click response < 16ms
+    [ ] 7.3.2 - Zoom feels instant
+    [ ] 7.3.3 - Pan is smooth
+    [ ] 7.3.4 - No frame drops
+
+================================================================================
+PHASE 8: END-TO-END BROWSER TESTING
+================================================================================
+Status: [ ] NOT STARTED
+Priority: CRITICAL
+
+MANUAL TEST CHECKLIST (Human-Like Operation):
+[ ] 8.1 - First-time user flow
+    [ ] 8.1.1 - Open page, observe loading
+    [ ] 8.1.2 - Tiles load progressively
+    [ ] 8.1.3 - Rotate globe smoothly
+    [ ] 8.1.4 - Zoom to country level, tiles sharp
+    [ ] 8.1.5 - Click country, highlight visible
+    [ ] 8.1.6 - Change theme
+    [ ] 8.1.7 - Start quiz
+
+[ ] 8.2 - Quiz mode testing
+    [ ] 8.2.1 - All 6 modes work
+    [ ] 8.2.2 - Scoring correct
+    [ ] 8.2.3 - Lives/game over works
+    [ ] 8.2.4 - Timer works
+    [ ] 8.2.5 - Skip function works
+
+[ ] 8.3 - Edge cases
+    [ ] 8.3.1 - Tiny countries clickable (Vatican, Monaco)
+    [ ] 8.3.2 - Island nations work
+    [ ] 8.3.3 - Special characters in names
+    [ ] 8.3.4 - Fuzzy matching works
+    [ ] 8.3.5 - Rapid clicking stable
+
+[ ] 8.4 - Cross-browser
+    [ ] 8.4.1 - Chrome
+    [ ] 8.4.2 - Firefox
+    [ ] 8.4.3 - Safari
+    [ ] 8.4.4 - Edge
+    [ ] 8.4.5 - Mobile Chrome
+    [ ] 8.4.6 - Mobile Safari
+
+[ ] 8.5 - Stress testing
+    [ ] 8.5.1 - 3 marathon games consecutively
+    [ ] 8.5.2 - Page open 1 hour, then play
+    [ ] 8.5.3 - Theme switching 10x
+    [ ] 8.5.4 - Rapid zoom 50x
+    [ ] 8.5.5 - Panel open/close stress
+
+[ ] 8.6 - Accessibility
+    [ ] 8.6.1 - Keyboard-only completion
+    [ ] 8.6.2 - 200% browser zoom
+    [ ] 8.6.3 - High contrast mode
+    [ ] 8.6.4 - Screen reader test
+
+================================================================================
+PHASE 9: FINAL POLISH & SHIP
+================================================================================
+Status: [ ] NOT STARTED
+Priority: FINAL
+
+[ ] 9.1 - Code cleanup
+    [ ] 9.1.1 - Remove console.log
+    [ ] 9.1.2 - Remove dead code
+    [ ] 9.1.3 - Resolve TODOs
+    [ ] 9.1.4 - Code review
+
+[ ] 9.2 - Documentation
+    [ ] 9.2.1 - Update README
+    [ ] 9.2.2 - Keyboard shortcuts doc
+    [ ] 9.2.3 - Credits/attribution
+
+[ ] 9.3 - Deployment
+    [ ] 9.3.1 - Minify if needed
+    [ ] 9.3.2 - Test production
+    [ ] 9.3.3 - Verify CDN assets
+    [ ] 9.3.4 - File size check (< 5MB target)
+
+[ ] 9.4 - Ship
+    [ ] 9.4.1 - All tests pass
+    [ ] 9.4.2 - No console errors
+    [ ] 9.4.3 - Performance met
+    [ ] 9.4.4 - Sign-off
+    [ ] 9.4.5 - SHIP IT!
+
+================================================================================
+ROADMAP MILESTONES
+================================================================================
+
+[~] MILESTONE 1: Research Complete (Phase 0)
+    Decision made: Hybrid Three.js + geo-three approach
+
+[ ] MILESTONE 2: Tile Integration Ready (Phase 1)
+    High-res streaming working with current globe
+
+[ ] MILESTONE 3: Quiz Verified (Phase 2)
+    All 6 modes work with tiled imagery
+
+[ ] MILESTONE 4: UI Complete (Phase 3)
+    Loading states and feedback polished
+
+[ ] MILESTONE 5: Polished (Phase 4-5)
+    Audio, effects, accessibility complete
+
+[ ] MILESTONE 6: Production Ready (Phase 6-7)
+    Stable, performant, zero lag
+
+[ ] MILESTONE 7: QA Complete (Phase 8)
+    All browser tests pass
+
+[ ] MILESTONE 8: SHIPPED (Phase 9)
+    Live and working!
+
+================================================================================
+RESOURCES & REFERENCES
+================================================================================
+
+PRIMARY LIBRARY:
+- geo-three: https://github.com/tentone/geo-three
+  - MIT license, Three.js tile streaming
+  - Demo: https://tentone.github.io/geo-three/
+  - Spherical globe with LOD support
+
+ALTERNATIVE (if geo-three insufficient):
+- three-globe: https://github.com/vasturiano/three-globe
+  - Built-in tile engine, zoom level 17
+  - CDN: //cdn.jsdelivr.net/npm/three-globe
+
+FREE TILE PROVIDERS (no API key):
+- OpenStreetMap: https://tile.openstreetmap.org/
+- CartoDB Positron: basemaps.cartocdn.com
+
+PAID/KEYED PROVIDERS (higher resolution):
+- MapTiler: https://docs.maptiler.com/cesium/
+- Bing Maps: requires API key
+- Google Maps: requires API key
+
+RESEARCH SOURCES:
+- Cesium.js: https://cesium.com/platform/cesiumjs/
+- Cesium GitHub: https://github.com/CesiumGS/cesium
+- Cesium Offline Guide: Documentation/OfflineGuide
+- Cesium GeoJSON: https://cesium.com/learn/cesiumjs/ref-doc/GeoJsonDataSource.html
+
+================================================================================
+NOTES & IMPLEMENTATION STRATEGY
+================================================================================
+
+1. HYBRID APPROACH BENEFITS:
+   - Keep proven Three.js interaction system
+   - Add professional tile streaming via geo-three
+   - Maintain single HTML file (CDN-based)
+   - Minimal code changes to existing quiz logic
+   - LOD ensures performance at all zoom levels
+
+2. IMPLEMENTATION STRATEGY:
+   - geo-three MapView renders tiles as base layer
+   - Existing country GeoJSON overlays on top
+   - OrbitControls unchanged
+   - Highlight shaders should work as-is
+
+3. RISK MITIGATION:
+   - If geo-three has issues, try three-globe
+   - If both fail, optimize current 8K texture approach
+   - Keep current implementation as fallback
+
+4. TILE PROVIDER SELECTION:
+   - Start with OpenStreetMap (free, no key)
+   - MapTiler for higher resolution (free tier available)
+   - Avoid Google/Bing initially (require API keys)
+
+================================================================================
+APPENDIX: ADVANCED RENDERING SUGGESTIONS
+================================================================================
+
+### A1. DEBUGGING TILE-BASED STREAMING (CESIUM + VITE)
+If the Cesium tile streaming is failing, it is likely due to how Vite handles static assets and Web Workers.
+- **Worker Configuration:** Cesium relies heavily on Web Workers. In Vite, ensure `cesium` is added to `optimizeDeps.include` and use `vite-plugin-cesium` to automate the heavy lifting of copying assets (Assets, Widgets, Workers) to the build folder.
+- **Base URL issues:** Cesium needs to know where its internal assets are. Set `window.CESIUM_BASE_URL` explicitly in your main entry point before initializing the Viewer.
+- **Single-File Constraint:** Streaming tiles from a single-file build is technically contradictory (streaming requires external fetching). If you must use tiles, they should be served from a CDN (like Ion or Mapbox) rather than bundled.
+
+### A2. STATIC HIGH-RES PBR WORKFLOW (TRADITIONAL 3D APPROACH)
+For a "Triple-A" look without the complexity of streaming, implement a High-Poly Triangle Mesh workflow:
+- **Geometry:** Instead of a simple `SphereGeometry`, use an `IcosahedronGeometry` with high detail (detail level 6+).
+- **Displacement/Height Mapping:** Use a 16-bit Heightmap (PNG) in the `displacementMap` property of a `MeshPhysicalMaterial`. This physically deforms the high-poly mesh to create real mountains/valleys.
+- **PBR Texture Stack:**
+    - **Albedo:** 8K Color map with baked-in ambient occlusion.
+    - **Roughness:** Maps moisture and desert areas for varying light reflections.
+    - **Normal Map:** Adds micro-detail (ripples in water, rock textures) that the heightmap might miss.
+    - **Emissive:** Use a night-lights map for the dark side of the globe.
+- **Optimization:** Use Three.js `LOD` (Level of Detail) to swap the high-poly mesh for a low-poly one when the camera is zoomed out.
+
+================================================================================
+TASK STATISTICS
+================================================================================
+
+Total Tasks: 136
+Completed: 15
+In Progress: 0
+Remaining: 121
+Completion: 11%
+
+Phase 0: 15/17 (88%) - IN PROGRESS
+Phase 1: 0/20 (0%)
+Phase 2: 0/16 (0%)
+Phase 3: 0/18 (0%)
+Phase 4: 0/12 (0%)
+Phase 5: 0/11 (0%)
+Phase 6: 0/11 (0%)
+Phase 7: 0/14 (0%)
+Phase 8: 0/28 (0%)
+Phase 9: 0/14 (0%)
+
+================================================================================
+END OF MASTER PLAN - Track progress in progress.txt
+================================================================================

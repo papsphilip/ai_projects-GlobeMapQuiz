@@ -2,7 +2,155 @@
 # ==============================
 # This file tracks all changes, revisions, and progress updates.
 # Append new entries at the top (newest first).
-# Reference: FINAL_ACTION_PLAN.txt for full task breakdown.
+# Reference: plans.txt for full task breakdown.
+
+================================================================================
+[2026-01-06] PROJECT RESTRUCTURE - MODULAR ARCHITECTURE
+================================================================================
+
+SESSION: Complete Project Restructure
+--------------------------------------
+
+STATUS: COMPLETE
+
+DECISION: Switched from tile-based streaming to PBR static textures approach
+- Tile streaming paused (geo-three LOD issues, rate limiting)
+- Saved tile research to tile-streaming-notes.txt
+- Restructured to modular ES6 architecture
+
+NEW PROJECT STRUCTURE:
+```
+GlobeMapQuiz/
+├── index.html              # Main entry point
+├── package.json            # Project config
+├── src/
+│   ├── main.js            # Application bootstrap
+│   ├── core/
+│   │   ├── config.js      # Configuration & constants
+│   │   ├── state.js       # Reactive state management
+│   │   └── scene.js       # Three.js scene setup
+│   ├── globe/
+│   │   ├── globe.js       # PBR globe with displacement
+│   │   └── countries.js   # GeoJSON country rendering
+│   ├── game/              # Quiz logic (to be migrated)
+│   ├── ui/                # UI components (to be migrated)
+│   ├── utils/
+│   │   └── audio.js       # Web Audio sound system
+│   └── data/              # Static data files
+├── assets/
+│   ├── textures/          # Earth textures (16K+)
+│   ├── geojson/           # Country boundaries
+│   └── audio/             # Sound effects
+├── styles/
+│   └── main.css           # Complete stylesheet
+└── globe_quiz.html        # Original (preserved)
+```
+
+KEY TECHNICAL CHANGES:
+
+1. GLOBE RENDERING (src/globe/globe.js):
+   - IcosahedronGeometry with detail level 6 (163k vertices)
+   - PBR material with displacement mapping
+   - Atmosphere glow shader
+   - Support for heightmap, normal map, specular, night lights
+
+2. STATE MANAGEMENT (src/core/state.js):
+   - Centralized reactive state with subscriptions
+   - Path-based get/set (e.g., 'quiz.score')
+   - localStorage persistence
+   - Change notification system
+
+3. SCENE MANAGEMENT (src/core/scene.js):
+   - Three.js scene, camera, renderer setup
+   - OrbitControls with damping
+   - Multi-light setup (sun, fill, hemisphere)
+   - flyTo() animation for camera
+
+4. AUDIO SYSTEM (src/utils/audio.js):
+   - Web Audio API based
+   - Procedural sound generation
+   - Sounds: correct, wrong, click, select, success, gameOver
+
+FILES CREATED:
+- index.html
+- package.json
+- src/main.js
+- src/core/config.js
+- src/core/state.js
+- src/core/scene.js
+- src/globe/globe.js
+- src/globe/countries.js
+- src/utils/audio.js
+- styles/main.css
+- tile-streaming-notes.txt
+
+FILES PRESERVED:
+- globe_quiz.html (original single-file version)
+- plans.txt
+- progress.txt
+
+NEXT STEPS:
+1. Download high-res Earth textures (16K color, 8K height/normal)
+2. Migrate remaining quiz logic from globe_quiz.html
+3. Test new modular structure
+4. Add heightmap displacement
+
+TEXTURE SOURCES NEEDED:
+- NASA Blue Marble: https://visibleearth.nasa.gov/
+- Natural Earth: https://www.naturalearthdata.com/
+- Earth textures: https://www.solarsystemscope.com/textures/
+
+================================================================================
+[2026-01-06] FILE CONSOLIDATION & PHASE 0 COMPLETION
+================================================================================
+
+SESSION: Plan Merge & CDN Verification
+--------------------------------------
+
+PHASE: 0.3.6, 0.3.7 - CDN Testing & Zoom Verification
+Status: [x] COMPLETE
+
+ACTIONS COMPLETED:
+
+1. FILE CONSOLIDATION:
+   [x] Merged plans.txt and FINAL_ACTION_PLAN.txt into unified plans.txt v2.1
+   [x] Deleted redundant FINAL_ACTION_PLAN.txt
+   [x] Removed .vite/ temp folder
+   [x] POC files already archived in poc-archive/ folder (kept for reference)
+
+2. GEO-THREE CDN VERIFICATION (Task 0.3.6):
+   [x] CDN URL: https://cdn.jsdelivr.net/npm/geo-three/build/geo-three.js
+   [x] Bundle size: ~50-60KB (minified)
+   [x] Version: 0.1.15
+   [x] Peer dependency: Three.js >0.120.0
+   [x] Module format: UMD (CommonJS, AMD, global compatible)
+
+3. ZOOM LEVEL VERIFICATION (Task 0.3.7):
+   [x] Maximum zoom: Level 20 supported
+   [x] Sufficient for country detail (level 17+ required)
+   [x] Spherical globe mode confirmed
+   [x] Note: Planar tiles stretch near poles in spherical mode
+
+PHASE 0 STATUS:
+- Completed: 15/17 tasks (88%)
+- Remaining: 0.4 (POC) and 0.5 (GO/NO-GO decision)
+
+KNOWN ISSUES FROM PRIOR SESSION:
+- three-globe npm: globeTileEngineUrl method exists but tiles never requested
+- geo-three CDN: Not tested in actual integration yet
+- Recommendation: Try geo-three CDN directly, skip npm/Vite approach
+
+NEXT STEPS:
+1. Phase 0.4 - Create hybrid proof-of-concept with geo-three CDN
+2. Phase 0.5 - GO/NO-GO decision based on POC results
+
+FILES MODIFIED:
+- plans.txt: Merged with FINAL_ACTION_PLAN.txt, updated stats
+- progress.txt: Added this session entry
+
+FILES DELETED:
+- FINAL_ACTION_PLAN.txt (content merged into plans.txt)
+- .vite/ folder (temp files)
 
 ================================================================================
 [2026-01-06] TILE STREAMING INVESTIGATION - PAUSED
@@ -219,7 +367,7 @@ MILESTONE TRACKER
 
 [~] MILESTONE 1: Research Complete
     Target: Phase 0 complete, decision made
-    Status: IN PROGRESS (71%)
+    Status: IN PROGRESS (88%)
     Decision: Hybrid Three.js + geo-three approach
 
 [ ] MILESTONE 2: Tile Integration Ready
@@ -254,14 +402,14 @@ MILESTONE TRACKER
 STATISTICS
 ================================================================================
 
-Total Tasks: 132
-Completed: 12
-In Progress: 2
-Remaining: 118
-Completion: 9%
+Total Tasks: 136
+Completed: 15
+In Progress: 0
+Remaining: 121
+Completion: 11%
 
 Phase Breakdown:
-- Phase 0: 12/17 (71%) - IN PROGRESS
+- Phase 0: 15/17 (88%) - IN PROGRESS
 - Phase 1: 0/20 (0%) - BLOCKED
 - Phase 2: 0/16 (0%)
 - Phase 3: 0/15 (0%)

@@ -1,0 +1,22 @@
+{
+  "name": "globe-map-quiz",
+  "version": "2.0.0",
+  "description": "Interactive 3D globe geography quiz game with multiple modes",
+  "main": "src/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "python -m http.server 3000",
+    "serve": "npx serve -l 3000"
+  },
+  "keywords": [
+    "geography",
+    "quiz",
+    "globe",
+    "threejs",
+    "game",
+    "education"
+  ],
+  "author": "Globe Map Quiz",
+  "license": "MIT",
+  "devDependencies": {}
+}

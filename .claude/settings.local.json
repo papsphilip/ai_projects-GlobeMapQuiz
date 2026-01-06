@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "WebFetch(domain:cesium.com)"
+      "WebFetch(domain:cesium.com)",
+      "Bash(tree:*)"
     ]
   }
 }

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive 3D globe geography quiz game. Test your knowledge of countries, flags, and locations with multiple game modes.">
+    <meta name="keywords" content="geography quiz, globe game, country quiz, flag quiz, educational game, 3D globe">
+    <meta name="author" content="Globe Map Quiz">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Globe Map Quiz - Ultimate Geography Adventure">
+    <meta property="og:description" content="Interactive 3D globe geography quiz game with multiple modes">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+
+    <title>Globe Map Quiz - Ultimate Geography Adventure</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Rubik:wght@400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body class="theme-cyber">
+    <!-- Loading Screen -->
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <div class="splash-globe"></div>
+            <h1>Globe Map Quiz</h1>
+            <div class="splash-progress">
+                <div class="splash-progress-bar" id="load-progress"></div>
+            </div>
+            <p id="load-status">Loading textures...</p>
+        </div>
+    </div>
+
+    <!-- Main Canvas -->
+    <div id="canvas-container"></div>
+
+    <!-- UI Overlay -->
+    <div id="ui-overlay">
+        <!-- Top Bar -->
+        <header id="top-bar">
+            <button id="btn-menu" class="icon-btn" aria-label="Menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12h18M3 6h18M3 18h18"/>
+                </svg>
+            </button>
+            <h1 id="app-title">Globe Map Quiz</h1>
+            <button id="btn-settings" class="icon-btn" aria-label="Settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42m12.72-12.72l1.42-1.42"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- HUD -->
+        <div id="hud" class="hidden">
+            <div id="hud-score">Score: <span>0</span></div>
+            <div id="hud-streak">Streak: <span>0</span></div>
+            <div id="hud-lives">Lives: <span>3</span></div>
+            <div id="hud-timer">Time: <span>--</span></div>
+            <div id="hud-progress">1 / 20</div>
+        </div>
+
+        <!-- Question Display -->
+        <div id="question-panel" class="glass-panel hidden">
+            <h2 id="question-text">Find this country:</h2>
+            <div id="question-target">Country Name</div>
+            <div id="mcq-options"></div>
+        </div>
+
+        <!-- Feedback Display -->
+        <div id="feedback" class="hidden"></div>
+
+        <!-- Country Info Panel -->
+        <div id="country-info" class="glass-panel hidden">
+            <h3 id="country-name">Country Name</h3>
+            <img id="country-flag" src="" alt="Flag">
+            <p id="country-region">Region</p>
+        </div>
+    </div>
+
+    <!-- Side Panel (Country List) -->
+    <aside id="side-panel" class="glass-panel">
+        <div class="panel-header">
+            <h2>Countries</h2>
+            <input type="search" id="country-search" placeholder="Search...">
+        </div>
+        <div id="country-list"></div>
+    </aside>
+
+    <!-- Settings Panel -->
+    <aside id="settings-panel" class="glass-panel">
+        <div class="panel-header">
+            <h2>Settings</h2>
+            <button id="btn-close-settings" class="icon-btn">×</button>
+        </div>
+        <div class="settings-content">
+            <!-- Theme -->
+            <div class="setting-group">
+                <label>Theme</label>
+                <div id="theme-buttons" class="button-group">
+                    <button data-theme="cyber" class="active">Cyber</button>
+                    <button data-theme="royal">Royal</button>
+                    <button data-theme="terminal">Terminal</button>
+                    <button data-theme="paper">Paper</button>
+                    <button data-theme="midnight">Midnight</button>
+                    <button data-theme="navy">Navy</button>
+                </div>
+            </div>
+
+            <!-- Audio -->
+            <div class="setting-group">
+                <label>Sound</label>
+                <div class="setting-row">
+                    <input type="checkbox" id="sound-enabled" checked>
+                    <span>Enabled</span>
+                </div>
+                <input type="range" id="sound-volume" min="0" max="100" value="50">
+            </div>
+
+            <!-- Globe -->
+            <div class="setting-group">
+                <label>Globe</label>
+                <div class="setting-row">
+                    <input type="checkbox" id="auto-rotate" checked>
+                    <span>Auto Rotate</span>
+                </div>
+                <div class="setting-row">
+                    <input type="checkbox" id="show-borders" checked>
+                    <span>Show Borders</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Quiz Menu Modal -->
+    <div id="quiz-modal" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <h2>Start Quiz</h2>
+
+            <div class="quiz-modes">
+                <button data-mode="locate" class="mode-btn">
+                    <span class="mode-icon">📍</span>
+                    <span class="mode-name">Locate</span>
+                    <span class="mode-desc">Find the country on the globe</span>
+                </button>
+                <button data-mode="identify" class="mode-btn">
+                    <span class="mode-icon">🔍</span>
+                    <span class="mode-name">Identify</span>
+                    <span class="mode-desc">Name the highlighted country</span>
+                </button>
+                <button data-mode="flags" class="mode-btn">
+                    <span class="mode-icon">🏳️</span>
+                    <span class="mode-name">Flags</span>
+                    <span class="mode-desc">Match flags to countries</span>
+                </button>
+                <button data-mode="marathon" class="mode-btn">
+                    <span class="mode-icon">🏆</span>
+                    <span class="mode-name">Marathon</span>
+                    <span class="mode-desc">Find all countries</span>
+                </button>
+            </div>
+
+            <div class="difficulty-select">
+                <button data-diff="easy" class="diff-btn">Easy</button>
+                <button data-diff="medium" class="diff-btn active">Medium</button>
+                <button data-diff="hard" class="diff-btn">Hard</button>
+            </div>
+
+            <div class="modal-actions">
+                <button id="btn-start-quiz" class="primary-btn">Start</button>
+                <button id="btn-cancel-quiz" class="secondary-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
+
+    <!-- App -->
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>

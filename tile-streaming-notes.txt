@@ -1,0 +1,155 @@
+# TILE-BASED STREAMING RESEARCH NOTES
+# ====================================
+# Status: PAUSED - Revisit later
+# Date: 2026-01-06
+
+================================================================================
+SUMMARY
+================================================================================
+
+Investigated tile-based streaming as an alternative to static 8K textures.
+Proof of concept works but has issues that need resolution.
+
+================================================================================
+LIBRARIES TESTED
+================================================================================
+
+1. THREE-GLOBE (npm: three-globe)
+   - Has globeTileEngineUrl() method
+   - CDN version doesn't expose tile method
+   - npm version: method exists but tiles never requested
+   - Status: INCOMPLETE/EXPERIMENTAL
+
+2. GEO-THREE (npm: geo-three)
+   - Purpose-built tile streaming for Three.js
+   - CDN: https://cdn.jsdelivr.net/npm/geo-three@0.1.15/build/geo-three.min.js
+   - Size: ~50-60KB minified
+   - License: MIT
+   - Status: WORKS but LOD issues with scaled globe
+
+================================================================================
+GEO-THREE FINDINGS
+================================================================================
+
+WHAT WORKS:
+- Spherical globe mode (Geo.MapView.SPHERICAL)
+- Tile streaming from multiple providers
+- Basic rendering of world map
+- Three.js r128 compatibility
+
+WHAT DOESN'T WORK WELL:
+- LOD system doesn't scale properly when globe is scaled down
+- Tiles load infinitely (13k+ tiles) without proper LOD limiting
+- Zoom doesn't trigger higher resolution tiles reliably
+- CORS requires HTTP server (not file://)
+
+PROVIDERS TESTED:
+- OpenStreetMap: Works, but rate-limits aggressively
+- ESRI Satellite: Works best, fewer CORS issues
+- CartoDB Voyager: Works
+- Wikimedia Maps: Works
+
+================================================================================
+CODE REFERENCE (POC v4)
+================================================================================
+
+Key setup for geo-three spherical globe:
+
+```javascript
+// Scale Earth to radius = 1
+const EARTH_RADIUS = Geo.UnitsUtils.EARTH_RADIUS; // 6371008 meters
+const scale = 1 / EARTH_RADIUS;
+
+// Create map
+map = new Geo.MapView(Geo.MapView.SPHERICAL, provider);
+map.scale.set(scale, scale, scale);
+
+// LOD configuration
+map.lod = new Geo.LODRadial();
+map.lod.subdivideDistance = 50;
+map.lod.simplifyDistance = 120;
+
+// Camera for scaled globe
+camera.position.set(0, 0, 2.5);
+controls.minDistance = 1.05;
+controls.maxDistance = 5;
+```
+
+Tile caching implementation:
+```javascript
+const tileCache = new Map();
+const MAX_CACHE_SIZE = 500;
+const MAX_CONCURRENT = 6;
+
+// Cache key format: "providerName/zoom/x/y"
+```
+
+================================================================================
+ISSUES TO RESOLVE (FUTURE)
+================================================================================
+
+1. LOD SCALING
+   - geo-three LOD calculates distance in world coordinates
+   - When we scale globe down, LOD thinks camera is very far
+   - Need to either: modify LOD, or don't scale globe
+
+2. RATE LIMITING
+   - OpenStreetMap returns 429 errors frequently
+   - Need better retry logic or different provider
+
+3. TILE COUNT
+   - System loads too many tiles
+   - Need stricter LOD thresholds or custom LOD implementation
+
+4. ZOOM RESOLUTION
+   - Zooming doesn't reliably trigger higher-res tile loading
+   - May need to manually trigger LOD updates based on camera distance
+
+================================================================================
+ALTERNATIVE APPROACHES TO CONSIDER
+================================================================================
+
+1. DON'T SCALE GLOBE
+   - Keep Earth at real size (6.37M meter radius)
+   - Position camera at realistic distance
+   - Use logarithmic depth buffer
+   - Adjust near/far planes appropriately
+
+2. CUSTOM LOD IMPLEMENTATION
+   - Override Geo.LODRadial
+   - Account for scale factor in distance calculations
+
+3. MANUAL TILE MANAGEMENT
+   - Don't use geo-three's LOD
+   - Calculate visible tiles based on camera position
+   - Load/unload tiles manually
+
+4. DIFFERENT LIBRARY
+   - Cesium.js (heavy, but proven)
+   - Custom implementation using Three.js + tile math
+
+================================================================================
+FILES CREATED
+================================================================================
+
+- geo-three-poc.html (v4 - optimized with caching)
+- poc-archive/ folder (earlier attempts)
+
+================================================================================
+DECISION
+================================================================================
+
+Pausing tile-based approach in favor of:
+- High-resolution static textures (16K+)
+- PBR materials with heightmap displacement
+- Geodesic sphere geometry for proper displacement
+- Reference: Sebastian Lague's Geography Adventures
+
+Will revisit tile streaming when:
+- geo-three releases LOD fixes
+- More time to implement custom LOD
+- Need for street-level zoom (not required for country quiz)
+
+================================================================================
+END OF NOTES
+================================================================================

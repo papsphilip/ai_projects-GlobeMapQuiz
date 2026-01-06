@@ -1,0 +1,694 @@
+/**
+ * Globe Map Quiz - Main Stylesheet
+ * Professional styling with theme support
+ */
+
+/* ===========================================
+   CSS Variables & Theme Support
+   =========================================== */
+:root {
+    /* Default (Cyber) Theme */
+    --bg-color: #0f172a;
+    --panel-bg: rgba(15, 23, 42, 0.9);
+    --accent-color: #38bdf8;
+    --text-color: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border-color: rgba(56, 189, 248, 0.3);
+    --success-color: #34d399;
+    --error-color: #f87171;
+    --warning-color: #fbbf24;
+
+    /* Typography */
+    --font-main: 'Outfit', system-ui, sans-serif;
+    --font-head: 'Rubik', sans-serif;
+    --font-mono: 'Fira Code', monospace;
+
+    /* Sizing */
+    --panel-radius: 1rem;
+    --panel-blur: 16px;
+
+    /* Transitions */
+    --transition-fast: 150ms;
+    --transition-normal: 300ms;
+}
+
+/* Theme: Royal */
+.theme-royal {
+    --bg-color: #1a0b2e;
+    --panel-bg: rgba(26, 11, 46, 0.9);
+    --accent-color: #fbbf24;
+    --text-color: #fef3c7;
+    --border-color: rgba(251, 191, 36, 0.4);
+}
+
+/* Theme: Terminal */
+.theme-terminal {
+    --bg-color: #000000;
+    --panel-bg: rgba(0, 20, 0, 0.95);
+    --accent-color: #00ff00;
+    --text-color: #00ff00;
+    --border-color: #00ff00;
+    --font-main: 'Fira Code', monospace;
+    --panel-radius: 0;
+}
+
+/* Theme: Paper */
+.theme-paper {
+    --bg-color: #f3f4f6;
+    --panel-bg: rgba(255, 255, 255, 0.95);
+    --accent-color: #1f2937;
+    --text-color: #111827;
+    --text-muted: #6b7280;
+    --border-color: #d1d5db;
+}
+
+/* Theme: Midnight */
+.theme-midnight {
+    --bg-color: #000000;
+    --panel-bg: rgba(20, 20, 30, 0.9);
+    --accent-color: #6366f1;
+    --text-color: #e0e7ff;
+    --border-color: rgba(99, 102, 241, 0.4);
+}
+
+/* Theme: Navy */
+.theme-navy {
+    --bg-color: #0a1628;
+    --panel-bg: rgba(10, 22, 40, 0.9);
+    --accent-color: #f59e0b;
+    --text-color: #fef3c7;
+    --border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* ===========================================
+   Base Styles
+   =========================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.5;
+    transition: background-color var(--transition-normal);
+}
+
+/* ===========================================
+   Canvas Container
+   =========================================== */
+#canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+#canvas-container canvas {
+    display: block;
+}
+
+/* ===========================================
+   Splash Screen
+   =========================================== */
+.splash-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+
+.splash-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.splash-content {
+    text-align: center;
+}
+
+.splash-globe {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 2rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e40af, #38bdf8, #34d399);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.splash-content h1 {
+    font-family: var(--font-head);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: var(--accent-color);
+}
+
+.splash-progress {
+    width: 200px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin: 0 auto 1rem;
+    overflow: hidden;
+}
+
+.splash-progress-bar {
+    height: 100%;
+    background: var(--accent-color);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+#load-status {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+/* ===========================================
+   Glass Panel Component
+   =========================================== */
+.glass-panel {
+    background: var(--panel-bg);
+    backdrop-filter: blur(var(--panel-blur));
+    -webkit-backdrop-filter: blur(var(--panel-blur));
+    border: 1px solid var(--border-color);
+    border-radius: var(--panel-radius);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ===========================================
+   UI Overlay
+   =========================================== */
+#ui-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+#ui-overlay > * {
+    pointer-events: auto;
+}
+
+/* ===========================================
+   Top Bar
+   =========================================== */
+#top-bar {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--panel-bg);
+    backdrop-filter: blur(var(--panel-blur));
+    border-radius: 2rem;
+    border: 1px solid var(--border-color);
+}
+
+#app-title {
+    font-family: var(--font-head);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin: 0;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--accent-color);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all var(--transition-fast);
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.icon-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* ===========================================
+   HUD
+   =========================================== */
+#hud {
+    position: absolute;
+    top: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2rem;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+}
+
+#hud > div {
+    padding: 0.5rem 1rem;
+    background: var(--panel-bg);
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+#hud span {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+/* ===========================================
+   Question Panel
+   =========================================== */
+#question-panel {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    min-width: 300px;
+}
+
+#question-text {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+#question-target {
+    font-family: var(--font-head);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+#mcq-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+#mcq-options button {
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    color: var(--text-color);
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+#mcq-options button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-color);
+}
+
+/* ===========================================
+   Feedback Display
+   =========================================== */
+#feedback {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-head);
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    animation: feedbackPop 0.5s ease;
+}
+
+#feedback.correct {
+    color: var(--success-color);
+    text-shadow: 0 0 20px var(--success-color);
+}
+
+#feedback.wrong {
+    color: var(--error-color);
+    text-shadow: 0 0 20px var(--error-color);
+}
+
+@keyframes feedbackPop {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    50% { transform: translate(-50%, -50%) scale(1.2); }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* ===========================================
+   Side Panels
+   =========================================== */
+#side-panel,
+#settings-panel {
+    position: fixed;
+    top: 0;
+    height: 100%;
+    width: 320px;
+    padding: 1.5rem;
+    transition: transform var(--transition-normal) ease;
+    overflow-y: auto;
+}
+
+#side-panel {
+    left: 0;
+    transform: translateX(-100%);
+}
+
+#side-panel.open {
+    transform: translateX(0);
+}
+
+#settings-panel {
+    right: 0;
+    transform: translateX(100%);
+}
+
+#settings-panel.open {
+    transform: translateX(0);
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.panel-header h2 {
+    font-family: var(--font-head);
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+/* ===========================================
+   Settings
+   =========================================== */
+.setting-group {
+    margin-bottom: 1.5rem;
+}
+
+.setting-group label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.setting-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.button-group button {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    color: var(--text-color);
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.button-group button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.button-group button.active {
+    background: var(--accent-color);
+    color: var(--bg-color);
+    border-color: var(--accent-color);
+}
+
+/* ===========================================
+   Modal
+   =========================================== */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    width: 90%;
+    max-width: 500px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.modal-content h2 {
+    font-family: var(--font-head);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.quiz-modes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.mode-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: 0.75rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.mode-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--border-color);
+}
+
+.mode-btn.active {
+    border-color: var(--accent-color);
+    background: rgba(56, 189, 248, 0.1);
+}
+
+.mode-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.mode-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.mode-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.difficulty-select {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.diff-btn {
+    padding: 0.5rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 2rem;
+    color: var(--text-color);
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.diff-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.diff-btn.active {
+    background: var(--accent-color);
+    color: var(--bg-color);
+    border-color: var(--accent-color);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.primary-btn {
+    padding: 0.75rem 2rem;
+    background: var(--accent-color);
+    color: var(--bg-color);
+    border: none;
+    border-radius: 0.5rem;
+    font-family: var(--font-main);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.primary-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px var(--accent-color);
+}
+
+.secondary-btn {
+    padding: 0.75rem 2rem;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.secondary-btn:hover {
+    color: var(--text-color);
+    border-color: var(--text-color);
+}
+
+/* ===========================================
+   Utility Classes
+   =========================================== */
+.hidden {
+    display: none !important;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* ===========================================
+   Scrollbar
+   =========================================== */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+}
+
+/* ===========================================
+   Terminal Theme Effects
+   =========================================== */
+.theme-terminal::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 255, 0, 0.03) 0px,
+        rgba(0, 255, 0, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    z-index: 9998;
+}
+
+.theme-terminal .glass-panel {
+    border-radius: 0;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+/* ===========================================
+   Responsive
+   =========================================== */
+@media (max-width: 768px) {
+    #side-panel,
+    #settings-panel {
+        width: 100%;
+    }
+
+    #hud {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0 1rem;
+    }
+
+    #hud > div {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .quiz-modes {
+        grid-template-columns: 1fr;
+    }
+
+    #question-panel {
+        width: 90%;
+        min-width: auto;
+    }
+}
