@@ -1,0 +1,298 @@
+# GLOBE MAP QUIZ: PROGRESS LOG
+# ==============================
+# This file tracks all changes, revisions, and progress updates.
+# Append new entries at the top (newest first).
+# Reference: FINAL_ACTION_PLAN.txt for full task breakdown.
+
+================================================================================
+[2026-01-06] TILE STREAMING INVESTIGATION - PAUSED
+================================================================================
+
+SESSION: Vite Build & Tile Engine Testing
+------------------------------------------
+
+PHASE: 0.4, 0.5 - POC Creation & Decision
+Status: [!] PAUSED - Tile streaming not working as expected
+
+INVESTIGATION SUMMARY:
+
+1. CDN-BASED TESTING (geo-three, three-globe):
+   - geo-three: ES module only, no UMD build for CDN script tags
+   - three-globe CDN: globeTileEngineUrl method NOT available in CDN build
+   - Result: CDN approach FAILED
+
+2. VITE/NPM BUILD TESTING:
+   - Set up Vite project with three-globe@2.31.3 + three@0.170.0
+   - globeTileEngineUrl method EXISTS in npm version
+   - Method can be SET but tiles are NOT REQUESTED
+   - Tile URL callback function never called
+   - Result: Feature appears INCOMPLETE or requires undocumented config
+
+POC FILES CREATED (for testing):
+- geo-three-poc.html - First attempt, geo-three CDN (failed)
+- three-globe-poc.html - Second attempt, three-globe CDN (partial)
+- package.json - Vite project config
+- vite.config.js - Build config with single-file plugin
+- index.html - Vite entry point
+- src/main.js - Test app with tile engine
+
+KEY FINDINGS:
+[x] three-globe npm has globeTileEngineUrl method
+[x] Method accepts tile URL function
+[!] Tile URL function is NEVER CALLED (no network requests)
+[!] Globe renders but only with static texture fallback
+[?] Feature may be experimental/incomplete in v2.31.3
+
+ATTEMPTED SOLUTIONS:
+1. Updated Three.js version (r128 -> r170) for compatibility
+2. Fixed OrbitControls import path for new Three.js
+3. Tried both OSM and CartoDB tile providers
+4. Called methods separately instead of chaining
+5. Added extensive logging - confirmed no tile requests made
+
+DECISION POINT:
+User requested to pause investigation and clean up.
+Recommended path forward: Progressive texture loading (2K->4K->8K)
+
+FILES TO CLEAN UP:
+- geo-three-poc.html (test file)
+- three-globe-poc.html (test file)
+- error.jpg (screenshot)
+- node_modules/ (npm packages)
+- package.json, package-lock.json (npm config)
+- vite.config.js (build config)
+- index.html (Vite entry)
+- src/ folder (Vite source)
+
+NEXT SESSION OPTIONS:
+1. Implement progressive texture loading (simpler, proven)
+2. Continue tile investigation with different library version
+3. Proceed with other plan phases (UI, accessibility, etc.)
+
+================================================================================
+[2026-01-06] PHASE 0 RESEARCH - HYBRID APPROACH DECIDED
+================================================================================
+
+SESSION: Cesium.js Research & Architecture Decision
+----------------------------------------------------
+
+PHASE: 0.1, 0.2, 0.3 - Research & Feasibility
+Status: [~] IN PROGRESS (71% complete)
+
+TASKS COMPLETED:
+[x] 0.1.1 - Cesium optimized for geospatial, native GeoJSON support
+[x] 0.1.2 - GeoJsonDataSource with styling (stroke, fill, strokeWidth)
+[x] 0.1.3 - Streaming imagery up to 0.3m resolution
+[x] 0.1.4 - Bundle size ~23MB (large, requires assets folder)
+[x] 0.1.5 - ScreenSpaceEventHandler for click/pick selection
+[x] 0.2.1 - Apache 2.0 license confirmed (free commercial use)
+[x] 0.2.2 - Cesium Ion optional, free tier available
+[x] 0.2.3 - Free providers: OpenStreetMap, Natural Earth II, CartoDB
+[x] 0.2.4 - Bundle: ~23MB, requires workers/shaders assets
+[x] 0.2.5 - Single-file: DIFFICULT (requires external assets)
+[x] 0.3.1 - geo-three: tile-based geographic visualization for Three.js
+[x] 0.3.2 - Providers: OpenStreetMap, MapTiler, Bing, Google, HERE
+[x] 0.3.3 - LOD modes: Raycast, Radial, Frustum (configurable)
+[x] 0.3.4 - Spherical globe mode supported
+[x] 0.3.5 - MIT license (commercial-friendly)
+
+TASKS IN PROGRESS:
+[~] 0.3.6 - Test CDN availability and bundle size
+[~] 0.3.7 - Verify zoom level support (need level 17+)
+
+PENDING:
+[ ] 0.4 - Create hybrid proof-of-concept
+[ ] 0.5 - GO/NO-GO decision
+
+CRITICAL DECISION MADE:
+User selected HYBRID APPROACH after reviewing options:
+- Option 1: Multi-file Vite build - REJECTED (complexity)
+- Option 2: CDN-based single HTML - Partial
+- Option 3: Optimize Three.js only - REJECTED (limited zoom)
+- Option 4: Hybrid approach - SELECTED
+
+HYBRID APPROACH DETAILS:
+- Keep Three.js for globe geometry and interactions (proven, working)
+- Add geo-three library for high-resolution tile streaming with LOD
+- Maintains CDN-based single HTML file deployment
+- Zero-lag interaction via existing OrbitControls
+
+KEY RESEARCH FINDINGS:
+
+1. CESIUM.JS ANALYSIS:
+   - Pros: Native GeoJSON, 0.3m imagery, geospatial-optimized
+   - Cons: 23MB bundle, requires assets folder, complex offline setup
+   - Verdict: Too heavy for single-file deployment
+
+2. GEO-THREE DISCOVERY:
+   - Purpose-built tile streaming for Three.js
+   - MIT license, actively maintained
+   - Supports spherical globe mode
+   - LOD control: Raycast, Radial, Frustum
+   - Providers: OSM, MapTiler, Bing, Google, HERE
+   - Demo: https://tentone.github.io/geo-three/
+
+3. THREE-GLOBE ALTERNATIVE:
+   - Built-in tile engine with zoom level 17
+   - CDN available: cdn.jsdelivr.net/npm/three-globe
+   - Backup option if geo-three has issues
+
+4. FREE TILE PROVIDERS:
+   - OpenStreetMap: https://tile.openstreetmap.org/ (no key)
+   - CartoDB Positron: basemaps.cartocdn.com (no key)
+   - Natural Earth II: built into Cesium (low-res fallback)
+
+FILES MODIFIED:
+- FINAL_ACTION_PLAN.txt: Updated to v2.1 with hybrid approach
+  - Revised executive summary
+  - Updated Phase 0 with completed research
+  - Added geo-three specific tasks in Phase 1
+  - Updated resources section
+  - Added task statistics
+
+BLOCKERS:
+- None currently
+
+NEXT STEPS:
+1. Complete 0.3.6 - Test geo-three CDN availability
+2. Complete 0.3.7 - Verify zoom level support
+3. Begin 0.4 - Create hybrid proof-of-concept
+4. Make 0.5 GO/NO-GO decision
+
+RESEARCH SOURCES USED:
+- https://cesium.com/platform/cesiumjs/
+- https://github.com/CesiumGS/cesium
+- https://cesium.com/learn/cesiumjs/ref-doc/GeoJsonDataSource.html
+- https://github.com/CesiumGS/cesium/blob/main/Documentation/OfflineGuide
+- https://github.com/tentone/geo-three
+- https://github.com/vasturiano/three-globe
+- https://community.cesium.com/ (various threads)
+
+================================================================================
+[2026-01-06] PROJECT INITIALIZED
+================================================================================
+
+SESSION: Initial Planning
+-------------------------
+
+ACTIONS COMPLETED:
+- Reviewed original plans.txt (architectural upgrade plan)
+- Analyzed current globe_quiz.html implementation (5,279 lines)
+- Assessed implemented vs pending features
+- Researched Cesium.js as alternative globe engine
+- Created FINAL_ACTION_PLAN.txt v2.0 with comprehensive todo lists
+- Created progress.txt for change tracking
+
+CURRENT STATE ASSESSMENT:
+- Existing: Single-file HTML with Three.js, 6 themes, 6 quiz modes
+- Existing: localStorage persistence, fuzzy matching, basic audio
+- Existing: Flag caching, CDN textures, splash screen
+- Missing: High-res zoom capability (current 8K max)
+- Missing: WebGL error handling
+- Missing: Full accessibility (ARIA, keyboard nav)
+- Missing: Comprehensive browser testing
+
+KEY DECISIONS:
+1. Investigate Cesium.js migration for high-res imagery streaming
+2. Maintain focus on zero-lag interaction as primary requirement
+3. Add Phase 8 for human-like E2E browser testing
+4. Track all progress in this file
+
+FILES CREATED:
+- FINAL_ACTION_PLAN.txt (v2.0 - comprehensive todo-based plan)
+- progress.txt (this file)
+
+FILES MODIFIED:
+- (none yet)
+
+BLOCKERS:
+- None currently
+
+NOTES:
+- Original plans.txt preserved for reference
+- Build system (Vite) deferred - single-file approach preferred
+- Service Worker/PWA deferred - requires separate files
+
+================================================================================
+MILESTONE TRACKER
+================================================================================
+
+[~] MILESTONE 1: Research Complete
+    Target: Phase 0 complete, decision made
+    Status: IN PROGRESS (71%)
+    Decision: Hybrid Three.js + geo-three approach
+
+[ ] MILESTONE 2: Tile Integration Ready
+    Target: Phase 1 complete
+    Status: BLOCKED (waiting on Milestone 1)
+
+[ ] MILESTONE 3: Quiz Verified
+    Target: Phase 2 complete
+    Status: NOT STARTED
+
+[ ] MILESTONE 4: UI Complete
+    Target: Phase 3 complete
+    Status: NOT STARTED
+
+[ ] MILESTONE 5: Polished Experience
+    Target: Phases 4-5 complete
+    Status: NOT STARTED
+
+[ ] MILESTONE 6: Production Ready
+    Target: Phases 6-7 complete
+    Status: NOT STARTED
+
+[ ] MILESTONE 7: QA Complete
+    Target: Phase 8 complete
+    Status: NOT STARTED
+
+[ ] MILESTONE 8: SHIPPED
+    Target: Phase 9 complete
+    Status: NOT STARTED
+
+================================================================================
+STATISTICS
+================================================================================
+
+Total Tasks: 132
+Completed: 12
+In Progress: 2
+Remaining: 118
+Completion: 9%
+
+Phase Breakdown:
+- Phase 0: 12/17 (71%) - IN PROGRESS
+- Phase 1: 0/20 (0%) - BLOCKED
+- Phase 2: 0/16 (0%)
+- Phase 3: 0/15 (0%)
+- Phase 4: 0/11 (0%)
+- Phase 5: 0/11 (0%)
+- Phase 6: 0/11 (0%)
+- Phase 7: 0/14 (0%)
+- Phase 8: 0/28 (0%)
+- Phase 9: 0/14 (0%)
+
+Last Updated: 2026-01-06
+
+## APPENDIX: ADVANCED RENDERING SUGGESTIONS
+
+### A1. DEBUGGING TILE-BASED STREAMING (CESIUM + VITE)
+If the Cesium tile streaming is failing, it is likely due to how Vite handles static assets and Web Workers.
+- **Worker Configuration:** Cesium relies heavily on Web Workers. In Vite, ensure `cesium` is added to `optimizeDeps.include` and use `vite-plugin-cesium` to automate the heavy lifting of copying assets (Assets, Widgets, Workers) to the build folder.
+- **Base URL issues:** Cesium needs to know where its internal assets are. Set `window.CESIUM_BASE_URL` explicitly in your main entry point before initializing the Viewer.
+- **Single-File Constraint:** Streaming tiles from a single-file build is technically contradictory (streaming requires external fetching). If you must use tiles, they should be served from a CDN (like Ion or Mapbox) rather than bundled.
+
+### A2. STATIC HIGH-RES PBR WORKFLOW (TRADITIONAL 3D APPROACH)
+For a "Triple-A" look without the complexity of streaming, implement a High-Poly Triangle Mesh workflow:
+- **Geometry:** Instead of a simple `SphereGeometry`, use an `IcosahedronGeometry` with high detail (detail level 6+).
+- **Displacement/Height Mapping:** Use a 16-bit Heightmap (PNG) in the `displacementMap` property of a `MeshPhysicalMaterial`. This physically deforms the high-poly mesh to create real mountains/valleys.
+- **PBR Texture Stack:**
+    - **Albedo:** 8K Color map with baked-in ambient occlusion.
+    - **Roughness:** Maps moisture and desert areas for varying light reflections.
+    - **Normal Map:** Adds micro-detail (ripples in water, rock textures) that the heightmap might miss.
+    - **Emissive:** Use a night-lights map for the dark side of the globe.
+- **Optimization:** Use Three.js `LOD` (Level of Detail) to swap the high-poly mesh for a low-poly one when the camera is zoomed out.
+
+================================================================================
+END OF PROGRESS LOG
+================================================================================

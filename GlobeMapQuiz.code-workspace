@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"claudeCode.initialPermissionMode": "plan",
+		"claudeCode.preferredLocation": "sidebar",
+		"claudeCode.useCtrlEnterToSend": true
+	}
+}

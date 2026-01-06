@@ -1,0 +1,71 @@
+# GLOBE MAP QUIZ: PROFESSIONAL UPGRADE MASTER PLAN
+
+Target: Transform the prototype into a shippable, robust, and visually stunning web game.
+
+## PHASE 1: ARCHITECTURAL FOUNDATION & TOOLING
+Status: HIGH PRIORITY
+Goal: Transition from a monolithic prototype to a modular, scalable development environment while retaining single-file portability.
+
+1.1 BUILD SYSTEM INTEGRATION
+- Implement Vite-based development environment.
+- Integrate `vite-plugin-singlefile` to bundle all assets (JS, CSS, Base64 imagery) into a single distribute-ready HTML.
+- Setup PostCSS for Tailwind CSS processing.
+
+1.2 MODULAR REFACTORING (ESM)
+- Extract Logic into specialized modules:
+  - `src/core/State.js`: Centralized reactive state using Object.defineProperty or Proxy.
+  - `src/core/Scene.js`: Three.js lifecycle (init, animate, disposal).
+  - `src/game/Engine.js`: Mission logic, scoring, and MCQ generation.
+  - `src/utils/Geometry.js`: GeoJSON processing and coordinate transformations.
+
+---
+
+## PHASE 2: UI/UX ROBUSTNESS & DESIGN SYSTEM
+Status: CRITICAL FOR SHIPPING
+Goal: Ensure the interface is indestructible, responsive, and professional.
+
+2.1 ROBUST UI FRAMEWORK
+- Migrate all styles to a unified Tailwind-based design system.
+- Implement "Skeleton States": UI placeholders that prevent layout shifts while 8K textures load.
+- Global Error Boundaries: A "Safe Mode" that catches WebGL context loss or asset failures, offering graceful recovery.
+
+2.2 USER EXPERIENCE ENHANCEMENTS
+- Mission Configuration: A polished "Command Center" modal for custom quiz building (Given vs Find).
+- State Persistence: Save mission progress, user settings, and high scores to `localStorage` with JSON validation.
+- Input Robustness: Fuzzy matching for text inputs that accounts for typos (Levenshtein distance), accents, and common abbreviations (e.g., "USA" vs "United States").
+
+---
+
+## PHASE 3: RENDERING & PERFORMANCE OPTIMIZATION
+Status: TECHNICAL EXCELLENCE
+Goal: 60FPS performance on mid-range hardware with high-fidelity visuals.
+
+3.1 ADVANCED SHADER PIPELINE
+- Refactor Highlight Shader: Optimize branching and replace complex calculations with pre-computed lookup tables.
+- Post-Processing: Integration of a lightweight EffectComposer for Bloom (glow) and FXAA (anti-aliasing) without killing performance.
+
+3.2 SMART ASSET PIPELINE
+- Texture Fallback System: If 8K "Blue Marble" imagery fails to load or causes OOM, automatically fall back to 2K textures or a procedural vector globe.
+- Flag Atlas Padding: Add precise 2px-4px gutters to the flag canvas to eliminate "texture bleeding" at country borders.
+
+---
+
+## PHASE 4: POLISH & SHIPPING READINESS
+Status: FINAL PASS
+Goal: Remove the "indie" feel and replace it with a premium product experience.
+
+4.1 SOUND & FEEDBACK
+- Replace simple oscillators with high-quality, quantized UI sound effects (Web Audio API with buffer pre-loading).
+- Impact Effects: Screen shake, haptic feedback (for mobile), and "Success Particles" on correct answers.
+
+4.2 ACCESSIBILITY & SEO
+- Full Keyboard Navigation: Every button and globe interaction accessible via `Tab` and `Arrows`.
+- ARIA Labels: Screen reader support for country names and mission status.
+- Metadata: OpenGraph/Twitter card integration for professional social sharing.
+
+4.3 OFFLINE & PORTABILITY
+- Service Worker Implementation: Enable PWA capabilities so the game works perfectly offline after the first visit.
+- Asset Embedding: Aggressive compression of auxiliary assets (SVG icons, sounds) to keep the final single-file size under 5MB.
+
+---
+

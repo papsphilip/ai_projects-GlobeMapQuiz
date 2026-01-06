@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Globe Quiz - Vite Build Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a1628;
+            color: white;
+            font-family: system-ui, sans-serif;
+            overflow: hidden;
+        }
+        #globe-container {
+            width: 100vw;
+            height: 100vh;
+        }
+        #info-panel {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.85);
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 350px;
+            z-index: 100;
+            font-size: 14px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        #info-panel h1 { font-size: 18px; margin-bottom: 10px; color: #38bdf8; }
+        #info-panel p { margin: 8px 0; }
+        .success { color: #22c55e; font-weight: bold; }
+        .warn { color: #fbbf24; font-weight: bold; }
+        .error { color: #ef4444; font-weight: bold; }
+        #debug {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.9);
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 450px;
+            max-height: 350px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 11px;
+            z-index: 100;
+            border: 1px solid #333;
+        }
+        #debug .info { color: #888; }
+        #debug .success { color: #22c55e; }
+        #debug .warn { color: #fbbf24; }
+        #debug .error { color: #ef4444; }
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            z-index: 100;
+        }
+        button {
+            background: #38bdf8;
+            color: #0a1628;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background: #0ea5e9; }
+        button.secondary { background: #6366f1; }
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 200;
+        }
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #38bdf8;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        #distance-display {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px 20px;
+            border-radius: 8px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="spinner"></div>
+        <div>Initializing Vite Build...</div>
+    </div>
+
+    <div id="globe-container"></div>
+
+    <div id="info-panel">
+        <h1>Vite Build Test</h1>
+        <p>Testing npm three-globe with tile streaming</p>
+        <p>Status: <span id="status">Loading...</span></p>
+        <hr style="margin: 15px 0; border-color: #333;">
+        <p><strong>Goal:</strong> Verify globeTileEngineUrl works via npm</p>
+    </div>
+
+    <div id="debug">
+        <strong>Debug Console:</strong><br>
+    </div>
+
+    <div id="distance-display">
+        Distance: <span id="distance">--</span>
+    </div>
+
+    <div id="controls">
+        <button onclick="flyTo(48.8566, 2.3522, 150)">Paris</button>
+        <button onclick="flyTo(35.6762, 139.6503, 150)">Tokyo</button>
+        <button onclick="flyTo(41.9028, 12.4964, 105)">Vatican</button>
+        <button onclick="flyTo(43.7384, 7.4246, 105)">Monaco</button>
+        <button onclick="flyTo(1.3521, 103.8198, 110)">Singapore</button>
+        <button class="secondary" onclick="resetView()">Reset</button>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
